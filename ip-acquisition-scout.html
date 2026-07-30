@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Acquisition Scout — Field Instrument 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EDE9E0;
+    --paper-raised:#F6F3EC;
+    --ink:#1C1B19;
+    --ink-soft:#5B564C;
+    --accent:#A8632B;
+    --accent-soft:#C98A52;
+    --sage:#5F7259;
+    --brick:#8B3A3A;
+    --mixed:#A8791F;
+    --line:#CFC7B6;
+    --serif:'Fraunces', serif;
+    --sans:'Inter', sans-serif;
+    --mono:'IBM Plex Mono', monospace;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--paper); color:var(--ink); font-family:var(--sans); line-height:1.5;}
+  .wrap{max-width:880px; margin:0 auto; padding:56px 28px 90px;}
+  .eyebrow{
+    font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--accent); display:flex; align-items:center; gap:10px; margin-bottom:14px;
+  }
+  .eyebrow::before{content:''; width:22px; height:1px; background:var(--accent);}
+  h1{font-family:var(--serif); font-weight:600; font-size:44px; line-height:1.05; margin:0 0 8px; letter-spacing:-0.01em;}
+  .sub{font-size:15px; color:var(--ink-soft); max-width:60ch; margin:0 0 12px;}
+  .caveat{
+    font-size:12.5px; color:var(--ink-soft); font-family:var(--mono); max-width:60ch;
+    padding:10px 14px; border-left:2px solid var(--accent); margin-bottom:36px;
+  }
+
+  .intake{background:var(--paper-raised); border:1px solid var(--line); padding:28px; position:relative;}
+  .intake::before{
+    content:'SCOUTING BRIEF'; position:absolute; top:-10px; left:24px; background:var(--paper);
+    padding:0 8px; font-family:var(--mono); font-size:10px; letter-spacing:0.14em; color:var(--ink-soft);
+  }
+  label{
+    display:block; font-family:var(--mono); font-size:11px; letter-spacing:0.08em; text-transform:uppercase;
+    color:var(--ink-soft); margin:20px 0 8px;
+  }
+  label:first-of-type{margin-top:4px;}
+  label .opt{text-transform:none; letter-spacing:0; color:var(--accent-soft); font-family:var(--sans);}
+  input[type=text], select{
+    width:100%; background:#fff; border:1px solid var(--line); color:var(--ink);
+    font-family:var(--sans); font-size:14.5px; padding:12px 14px; height:44px;
+  }
+  input:focus, select:focus{outline:2px solid var(--accent); outline-offset:1px;}
+
+  .scope-row{display:flex; gap:18px; flex-wrap:wrap; margin-top:4px;}
+  .scope-item{
+    display:flex; align-items:center; gap:8px; font-size:13.5px; color:var(--ink);
+    background:#fff; border:1px solid var(--line); padding:9px 14px;
+  }
+  .scope-item input{width:auto; height:auto;}
+
+  .two-col{display:grid; grid-template-columns:1fr 160px; gap:16px;}
+
+  .run-row{display:flex; align-items:center; gap:16px; margin-top:26px;}
+  button.run{
+    font-family:var(--mono); font-size:12px; letter-spacing:0.1em; text-transform:uppercase;
+    background:var(--ink); color:var(--paper); border:none; padding:14px 24px; cursor:pointer;
+    transition:background .15s ease;
+  }
+  button.run:hover:not(:disabled){background:var(--accent);}
+  button.run:disabled{opacity:0.5; cursor:wait;}
+  .status{font-family:var(--mono); font-size:12px; color:var(--ink-soft);}
+  .error{font-family:var(--mono); font-size:12px; color:var(--brick); margin-top:14px;}
+
+  #report{margin-top:52px;}
+  .report-head{
+    display:flex; justify-content:space-between; align-items:baseline;
+    border-bottom:1px solid var(--ink); padding-bottom:10px; margin-bottom:14px;
+  }
+  .report-head h2{font-family:var(--serif); font-size:24px; font-weight:600; margin:0;}
+  .report-head .date{font-family:var(--mono); font-size:11px; color:var(--ink-soft);}
+  .scout-note{
+    font-family:var(--serif); font-style:italic; font-size:17px; color:var(--accent);
+    margin:0 0 26px; padding-bottom:20px; border-bottom:1px dashed var(--line);
+  }
+
+  .card{
+    position:relative; background:var(--paper-raised); border:1px solid var(--line);
+    padding:24px 24px 22px 76px; margin-bottom:18px;
+  }
+  .rank{
+    position:absolute; left:0; top:0; bottom:0; width:60px;
+    display:flex; align-items:flex-start; justify-content:center; padding-top:22px;
+    font-family:var(--serif); font-weight:600; font-size:26px; color:var(--accent);
+    border-right:1px dashed var(--line);
+  }
+  .prop-title{font-family:var(--serif); font-weight:600; font-size:20px; margin:0 0 2px;}
+  .source{font-family:var(--mono); font-size:11px; color:var(--ink-soft); margin-bottom:14px;}
+  .tags{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;}
+  .tag{
+    font-family:var(--mono); font-size:10.5px; letter-spacing:0.06em; text-transform:uppercase;
+    padding:4px 9px; border:1px solid currentColor; border-radius:3px;
+  }
+  .tag.strong{color:var(--sage);}
+  .tag.moderate{color:var(--mixed);}
+  .tag.weak{color:var(--brick);}
+  .rationale{font-size:14.5px; color:var(--ink-soft); margin:0;}
+
+  .bottom-line{background:var(--ink); color:var(--paper); padding:24px 26px; margin-top:26px; font-family:var(--mono); font-size:12px; line-height:1.6;}
+
+  .copy-row{display:flex; justify-content:flex-end; margin-top:16px;}
+  button.copy{
+    font-family:var(--mono); font-size:11px; letter-spacing:0.08em; text-transform:uppercase;
+    background:transparent; color:var(--ink-soft); border:1px solid var(--line); padding:9px 16px; cursor:pointer;
+  }
+  button.copy:hover{border-color:var(--accent); color:var(--accent);}
+
+  @media (max-width:600px){
+    h1{font-size:32px;}
+    .card{padding-left:24px;}
+    .rank{position:static; width:auto; border-right:none; padding-top:0; margin-bottom:8px; justify-content:flex-start;}
+    .two-col{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">Field Instrument · 02</div>
+  <h1>Acquisition Scout</h1>
+  <p class="sub">Define what you're looking for. It searches for real indie fiction properties matching the brief, scores each against an acquisition rubric, and ranks them — the same read that got a six-book series in front of a CEO.</p>
+  <p class="caveat">This is a scouting signal, not a rights clearance. Treat every result as a lead to verify directly — audience numbers, licensing status, and author contact all need independent confirmation before any real pitch.</p>
+
+  <div class="intake">
+    <label>Genre / theme focus</label>
+    <input type="text" id="genre" placeholder="e.g. fantasy romance, workplace drama, slow-burn thriller">
+
+    <label>Target buyer context <span class="opt">— optional, sharpens the genre-market fit read</span></label>
+    <input type="text" id="buyerContext" placeholder="e.g. an OTT platform skewing 18–30, youth-led streaming audience">
+
+    <label>Source scope</label>
+    <div class="scope-row">
+      <label class="scope-item"><input type="checkbox" id="scopeWattpad" checked> Wattpad / indie web serials</label>
+      <label class="scope-item"><input type="checkbox" id="scopeSelfPub" checked> Self-published fiction catalogs</label>
+      <label class="scope-item"><input type="checkbox" id="scopeSmallPress" checked> Small-press catalogs</label>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <label>Additional angle <span class="opt">— optional</span></label>
+        <input type="text" id="angle" placeholder="e.g. multi-book completed series, strong ensemble cast">
+      </div>
+      <div>
+        <label>Shortlist size</label>
+        <select id="shortlistSize">
+          <option value="4">4</option>
+          <option value="6" selected>6</option>
+          <option value="8">8</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="run-row">
+      <button class="run" id="runBtn" onclick="runScout()">Run Scout</button>
+      <span class="status" id="statusText"></span>
+    </div>
+    <div class="error" id="errorText"></div>
+  </div>
+
+  <div id="report"></div>
+
+</div>
+
+<script>
+function tagClass(v){
+  v = (v||'').toUpperCase();
+  if(v === 'STRONG') return 'strong';
+  if(v === 'WEAK') return 'weak';
+  return 'moderate';
+}
+function escapeHtml(str){
+  const d = document.createElement('div');
+  d.textContent = str || '';
+  return d.innerHTML;
+}
+function extractJson(text){
+  let clean = text.trim().replace(/^```json/i,'').replace(/^```/,'').replace(/```$/,'').trim();
+  try{ return JSON.parse(clean); }catch(e){}
+  const start = clean.indexOf('{');
+  const end = clean.lastIndexOf('}');
+  if(start !== -1 && end !== -1 && end > start){
+    return JSON.parse(clean.slice(start, end+1));
+  }
+  throw new Error('Could not parse a JSON object from the response.');
+}
+
+async function runScout(){
+  const genre = document.getElementById('genre').value.trim();
+  const buyerContext = document.getElementById('buyerContext').value.trim();
+  const angle = document.getElementById('angle').value.trim();
+  const size = document.getElementById('shortlistSize').value;
+
+  const scopes = [];
+  if(document.getElementById('scopeWattpad').checked) scopes.push('Wattpad and other indie web serial platforms');
+  if(document.getElementById('scopeSelfPub').checked) scopes.push('self-published fiction catalogs (e.g. Kindle/Amazon self-pub lists, Notion Press, Pratilipi)');
+  if(document.getElementById('scopeSmallPress').checked) scopes.push('small-press publisher catalogs');
+
+  const btn = document.getElementById('runBtn');
+  const status = document.getElementById('statusText');
+  const errorBox = document.getElementById('errorText');
+  const report = document.getElementById('report');
+  errorBox.textContent = '';
+
+  if(!genre){
+    errorBox.textContent = 'Enter a genre or theme focus before running the scout.';
+    return;
+  }
+  if(scopes.length === 0){
+    errorBox.textContent = 'Select at least one source scope.';
+    return;
+  }
+
+  btn.disabled = true;
+  status.textContent = 'Scanning sources...';
+  report.innerHTML = '';
+
+  const systemPrompt = `You are an IP acquisition scout for a media strategist. You search the web to find REAL, currently-findable indie fiction properties — never invent titles or authors. You then score each one against an acquisition rubric and write in a prescriptive, operator register — like a strategy memo, not marketing copy.
+
+ACQUISITION RUBRIC (score each STRONG, MODERATE, or WEAK):
+- audienceSignal: proxy for audience size — read count, follower count, comment/engagement volume, ratings count, anything indicating real traction
+- genreFit: how well the genre/theme matches current market demand, especially against any target buyer context given
+- adaptability: structural fit for screen adaptation — clear arcs, ensemble cast, visual scene potential, serialized structure
+- rightsSignal: likelihood rights are actually available — self-published/indie status, no existing announced option or deal, no major publisher attached
+
+Use web search to find real candidate properties matching the brief before scoring anything. Do not fabricate results if search comes up thin — return fewer properties rather than invented ones, and say so in scoutNote.
+
+After searching, respond with ONLY valid JSON (no markdown fences, no preamble) in exactly this shape:
+{
+  "properties": [
+    {"rank":1,"title":"real title found via search","source":"platform/site name, e.g. Wattpad","audienceSignal":"STRONG|MODERATE|WEAK","genreFit":"STRONG|MODERATE|WEAK","adaptability":"STRONG|MODERATE|WEAK","rightsSignal":"STRONG|MODERATE|WEAK","rationale":"under 50 words, decision-memo voice, prescriptive — why this property, why now, what the pitch would be"}
+  ],
+  "scoutNote":"under 40 words on the scan itself — genre trends noticed, or a plain note if search results were thin"
+}
+
+Return at most ${size} properties, ranked best-to-worst for acquisition potential.`;
+
+  const userContent = `GENRE/THEME FOCUS: ${genre}
+
+TARGET BUYER CONTEXT: ${buyerContext || '(not specified — judge against general OTT/streaming market fit)'}
+
+SOURCE SCOPE TO SEARCH: ${scopes.join('; ')}
+
+ADDITIONAL ANGLE: ${angle || '(none specified)'}
+
+SHORTLIST SIZE: ${size}`;
+
+  try{
+    status.textContent = 'Searching indie fiction sources...';
+
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: [{ role: "user", content: userContent }],
+        tools: [{ type: "web_search_20250305", name: "web_search" }]
+      })
+    });
+
+    if(!response.ok){
+      throw new Error('API returned status ' + response.status);
+    }
+
+    const data = await response.json();
+
+    status.textContent = 'Scoring candidates...';
+
+    const textBlocks = (data.content || []).filter(b => b.type === 'text').map(b => b.text);
+    if(textBlocks.length === 0){ throw new Error('No text content returned.'); }
+    const fullText = textBlocks.join('\n');
+
+    const parsed = extractJson(fullText);
+    renderReport(genre, parsed);
+    status.textContent = 'Scout complete.';
+  }catch(err){
+    console.error(err);
+    errorBox.textContent = 'Something went wrong running the scout: ' + err.message + '. Try narrowing the genre or reducing the shortlist size, then run again.';
+    status.textContent = '';
+  }finally{
+    btn.disabled = false;
+  }
+}
+
+function renderReport(genre, data){
+  const report = document.getElementById('report');
+  const today = new Date().toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
+
+  let cardsHtml = '';
+  (data.properties || []).forEach(p => {
+    cardsHtml += `
+      <div class="card">
+        <div class="rank">${String(p.rank).padStart(2,'0')}</div>
+        <p class="prop-title">${escapeHtml(p.title)}</p>
+        <p class="source">${escapeHtml(p.source || 'source unspecified')}</p>
+        <div class="tags">
+          <span class="tag ${tagClass(p.audienceSignal)}">Audience: ${escapeHtml(p.audienceSignal)}</span>
+          <span class="tag ${tagClass(p.genreFit)}">Genre fit: ${escapeHtml(p.genreFit)}</span>
+          <span class="tag ${tagClass(p.adaptability)}">Adaptability: ${escapeHtml(p.adaptability)}</span>
+          <span class="tag ${tagClass(p.rightsSignal)}">Rights signal: ${escapeHtml(p.rightsSignal)}</span>
+        </div>
+        <p class="rationale">${escapeHtml(p.rationale)}</p>
+      </div>`;
+  });
+
+  report.innerHTML = `
+    <div class="report-head">
+      <h2>Scouting Report — ${escapeHtml(genre)}</h2>
+      <span class="date">${today}</span>
+    </div>
+    <p class="scout-note">${escapeHtml(data.scoutNote || '')}</p>
+    ${cardsHtml}
+    <div class="bottom-line">SCOUTING SIGNAL ONLY. Verify audience metrics, licensing status, and author contact independently before any real outreach or pitch.</div>
+    <div class="copy-row"><button class="copy" id="copyBtn">Copy as Memo</button></div>
+  `;
+
+  document.getElementById('copyBtn').addEventListener('click', () => {
+    let memo = `ACQUISITION SCOUTING REPORT — ${genre}\n${today}\n\nSCOUT NOTE: ${data.scoutNote}\n\n`;
+    (data.properties || []).forEach(p => {
+      memo += `${String(p.rank).padStart(2,'0')}. ${p.title} (${p.source})\n`;
+      memo += `Audience: ${p.audienceSignal} | Genre fit: ${p.genreFit} | Adaptability: ${p.adaptability} | Rights signal: ${p.rightsSignal}\n`;
+      memo += `${p.rationale}\n\n`;
+    });
+    memo += `SCOUTING SIGNAL ONLY — verify independently before outreach.\n`;
+
+    navigator.clipboard.writeText(memo).then(() => {
+      const btn = document.getElementById('copyBtn');
+      const original = btn.textContent;
+      btn.textContent = 'Copied';
+      setTimeout(() => { btn.textContent = original; }, 1800);
+    });
+  });
+}
+</script>
+</body>
+</html>
