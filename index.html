@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Field Instruments</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EDE9E0;
+    --paper-raised:#F6F3EC;
+    --ink:#1C1B19;
+    --ink-soft:#5B564C;
+    --accent:#A8632B;
+    --accent-soft:#C98A52;
+    --sage:#5F7259;
+    --brick:#8B3A3A;
+    --mixed:#A8791F;
+    --line:#CFC7B6;
+    --serif:'Fraunces', serif;
+    --sans:'Inter', sans-serif;
+    --mono:'IBM Plex Mono', monospace;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--paper); color:var(--ink); font-family:var(--sans); line-height:1.55;}
+  .wrap{max-width:880px; margin:0 auto; padding:64px 28px 100px;}
+
+  .eyebrow{
+    font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--accent); display:flex; align-items:center; gap:10px; margin-bottom:16px;
+  }
+  .eyebrow::before{content:''; width:22px; height:1px; background:var(--accent);}
+
+  h1{font-family:var(--serif); font-weight:600; font-size:52px; line-height:1.03; margin:0 0 16px; letter-spacing:-0.01em;}
+  .intro{font-size:16px; color:var(--ink-soft); max-width:62ch; margin:0 0 10px;}
+  .intro strong{color:var(--ink); font-weight:600;}
+  .thesis{
+    font-family:var(--serif); font-style:italic; font-size:19px; color:var(--ink);
+    max-width:56ch; margin:28px 0 48px; padding-left:20px; border-left:2px solid var(--accent);
+  }
+
+  .grid{display:flex; flex-direction:column; gap:18px;}
+
+  .card{
+    position:relative; background:var(--paper-raised); border:1px solid var(--line);
+    padding:26px 26px 24px 84px; display:flex; flex-direction:column; gap:6px;
+  }
+  .num{
+    position:absolute; left:0; top:0; bottom:0; width:64px;
+    display:flex; align-items:flex-start; justify-content:center; padding-top:26px;
+    font-family:var(--serif); font-weight:600; font-size:26px; color:var(--accent);
+    border-right:1px dashed var(--line);
+  }
+  .card-top{display:flex; align-items:flex-start; justify-content:space-between; gap:14px; flex-wrap:wrap;}
+  .card-title{font-family:var(--serif); font-weight:600; font-size:22px; margin:0;}
+  .status{
+    font-family:var(--mono); font-weight:500; font-size:11px; letter-spacing:0.1em; text-transform:uppercase;
+    padding:5px 11px; border:2px solid currentColor; border-radius:3px; transform:rotate(-4deg); white-space:nowrap;
+  }
+  .status.live{color:var(--sage);}
+  .status.progress{color:var(--mixed);}
+  .status.planned{color:var(--ink-soft);}
+
+  .card-desc{font-size:14.5px; color:var(--ink-soft); margin:2px 0 12px; max-width:70ch;}
+
+  .card-link{
+    align-self:flex-start; font-family:var(--mono); font-size:12px; letter-spacing:0.06em; text-transform:uppercase;
+    color:var(--ink); text-decoration:none; border-bottom:1px solid var(--ink); padding-bottom:2px;
+  }
+  .card-link:hover{color:var(--accent); border-color:var(--accent);}
+  .card-link.disabled{color:var(--line); border-color:var(--line); pointer-events:none;}
+
+  .placeholder{
+    background:transparent; border:1px dashed var(--line); padding:26px 26px 24px 84px;
+    display:flex; align-items:center;
+  }
+  .placeholder .num{border-right:1px dashed var(--line); color:var(--line);}
+  .placeholder-text{font-family:var(--mono); font-size:12px; color:var(--ink-soft); letter-spacing:0.04em;}
+
+  footer{
+    margin-top:56px; padding-top:20px; border-top:1px solid var(--line);
+    font-family:var(--mono); font-size:11.5px; color:var(--ink-soft); letter-spacing:0.04em;
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;
+  }
+  footer a{color:var(--ink-soft); text-decoration:none; border-bottom:1px solid var(--line);}
+  footer a:hover{color:var(--accent); border-color:var(--accent);}
+
+  @media (max-width:600px){
+    h1{font-size:36px;}
+    .card, .placeholder{padding-left:26px;}
+    .num{position:static; width:auto; border-right:none; padding-top:0; margin-bottom:8px; justify-content:flex-start;}
+    .placeholder{align-items:flex-start; flex-direction:column;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">A Working Series</div>
+  <h1>Field Instruments</h1>
+  <p class="intro">Every brand and every deal has a gap between the story it tells and what's actually true underneath. I keep finding that gap by hand — so I'm building a set of tools that find it automatically.</p>
+  <p class="thesis">Each instrument here systematizes one judgment call I've made for real, so it can be run in minutes instead of by hand.</p>
+
+  <div class="grid" id="instrumentGrid"></div>
+
+  <footer>
+    <span>Built and maintained by Shivani Panchal</span>
+    <span><a href="https://www.linkedin.com/" target="_blank" rel="noopener">LinkedIn</a></span>
+  </footer>
+
+</div>
+
+<script>
+  // Add a new instrument here whenever a new tool is ready — this is the only
+  // place that needs to change. Each entry renders as a card automatically.
+  //
+  // status: "live" | "progress" | "planned"
+  // url: relative path to the tool's html file, or "" if not built yet
+
+  const instruments = [
+    {
+      title: "Positioning Audit",
+      description: "Paste in what a brand says about itself and what its customers actually say back — the audit tells you where the two agree, and where the story breaks.",
+      status: "live",
+      url: "d2c-positioning-auditor.html"
+    },
+    {
+      title: "Acquisition Scout",
+      description: "Define a genre and a buyer, and it searches for real indie fiction properties, scoring each against an acquisition rubric — audience signal, genre fit, adaptability, rights availability.",
+      status: "live",
+      url: "ip-acquisition-scout.html"
+    }
+  ];
+
+  const grid = document.getElementById('instrumentGrid');
+
+  instruments.forEach((tool, i) => {
+    const num = String(i + 1).padStart(2, '0');
+    const statusLabel = tool.status === 'live' ? 'Live'
+                        : tool.status === 'progress' ? 'In Progress'
+                        : 'Planned';
+    const linkHtml = tool.status === 'live' && tool.url
+      ? `<a class="card-link" href="${tool.url}">Open the instrument →</a>`
+      : `<span class="card-link disabled">Not yet available</span>`;
+
+    grid.insertAdjacentHTML('beforeend', `
+      <div class="card">
+        <div class="num">${num}</div>
+        <div class="card-top">
+          <p class="card-title">${tool.title}</p>
+          <span class="status ${tool.status}">${statusLabel}</span>
+        </div>
+        <p class="card-desc">${tool.description}</p>
+        ${linkHtml}
+      </div>
+    `);
+  });
+
+  // A visual placeholder so the page reads as an ongoing series, not a finished pair.
+  grid.insertAdjacentHTML('beforeend', `
+    <div class="placeholder">
+      <div class="num">${String(instruments.length + 1).padStart(2, '0')}</div>
+      <span class="placeholder-text">Next instrument in progress —</span>
+    </div>
+  `);
+</script>
+</body>
+</html>
